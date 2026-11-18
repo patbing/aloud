@@ -12,6 +12,27 @@
  "spentUpperBound": 0.02881,
  "takes": [
   {
+   "id": "h1",
+   "human": true,
+   "label": "Human voice (phone): Thirteen thin thieves…",
+   "target": "Thirteen thin thieves thought they had thrown the thread through the thimble.",
+   "audio": "h1.wav",
+   "heard": "Thirteen thieves thought they had thrown the thread through the thimble.",
+   "baseline": "Thirteen thin thieves thought they had thrown the thread through the thimble.",
+   "timing": {
+    "speechSec": 5.32,
+    "pauses": [
+     {
+      "at": 3,
+      "len": 0.74
+     }
+    ],
+    "start": 1.26
+   },
+   "coach": "You missed “thin”.\nTip: Speed up slightly (124 wpm is a bit slow).\nTip: Avoid inserting pauses; keep sentence flow (0.74 s is close to a break).",
+   "note": "A real person reading on a phone in this app on 2026-11-18, signed in with their own key. The transcript and coaching are the replies they got; the other takes are synthetic voices."
+  },
+  {
    "id": "t1a",
    "label": "Straight: The sixth sick sheikh's…",
    "target": "The sixth sick sheikh's sixth sheep is sick.",

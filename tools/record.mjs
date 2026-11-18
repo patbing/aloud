@@ -90,5 +90,8 @@ try {
     }
   }
 } catch (e) { console.error(String(e.message || e)); }
+// Takes recorded by a real person (human: true) are not made here; keep them first.
+const old = (() => { try { return JSON.parse(readFileSync(new URL('../recordings/takes.json', import.meta.url), 'utf8')).takes.filter((t) => t.human); } catch { return []; } })();
+takes.unshift(...old);
 writeFileSync(new URL('../recordings/takes.json', import.meta.url), JSON.stringify({ recordedAt: new Date().toISOString(), models: Object.values(M), voices: { reader: 'nova', baseline: 'alloy' }, spentUpperBound: +spent.toFixed(5), takes }, null, 1));
 console.log(takes.length + ' takes, worst-case spend ≈ ' + spent.toFixed(5) + ' P');

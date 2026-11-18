@@ -33,7 +33,7 @@
       facts.push(t.timing.pauses.length ? t.timing.pauses.length + ' pause' + (t.timing.pauses.length > 1 ? 's' : '') + ' (' + t.timing.pauses.map(function (p) { return p.len.toFixed(1) + ' s'; }).join(', ') + ')' : 'no pauses over 0.35 s');
     }
     box.appendChild(h('p', 'facts', facts.join(' · ')));
-    if (t.note) box.appendChild(h('p', 'warn', t.note));
+    if (t.note) box.appendChild(h('p', t.human ? 'facts' : 'warn', t.note));
     if (t.baselineError) box.appendChild(h('p', 'warn', 'The transcriber check failed (' + t.baselineError + '), so every word is counted.'));
     else if (sc.baselineDropped) box.appendChild(h('p', 'warn', 'The clean reading came back mostly wrong, so the transcriber check was ignored and every word is counted.'));
     var d = h('details', 'req'); d.appendChild(h('summary', null, 'What the transcriber wrote'));
@@ -50,14 +50,14 @@
       app.rec = rec;
       var list = $('takes'); list.textContent = '';
       rec.takes.forEach(function (t, i) {
-        var b = h('button', 'take', (i + 1) + '. ' + t.label);
+        var b = h('button', 'take' + (t.human ? ' human' : ''), (i + 1) + '. ' + t.label);
         b.type = 'button';
         b.addEventListener('click', trusted(function () { showRecorded(t); }));
         list.appendChild(b);
       });
-      $('recmeta').textContent = rec.takes.length + ' takes recorded ' + rec.recordedAt.slice(0, 10) + ' with ' + rec.models.join(', ') + '. The readers are synthetic voices; the transcripts and coaching are real model replies, the score is recomputed here.';
-      // Open on a take where a planted slip is caught: it shows what the scorer is for.
-      if (rec.takes.length) showRecorded(rec.takes.filter(function (t) { return t.id === 't2b'; })[0] || rec.takes[0]);
+      $('recmeta').textContent = rec.takes.length + ' takes recorded ' + rec.recordedAt.slice(0, 10) + ' with ' + rec.models.join(', ') + '. ' + (rec.takes.some(function (t) { return t.human; }) ? 'The first take is a real person on a phone; the others are synthetic voices. ' : 'The readers are synthetic voices; ') + 'The transcripts and coaching are real model replies, the score is recomputed here.';
+      // Open on a real voice if there is one, else on a take where a planted slip is caught.
+      if (rec.takes.length) showRecorded(rec.takes.filter(function (t) { return t.human; })[0] || rec.takes.filter(function (t) { return t.id === 't2b'; })[0] || rec.takes[0]);
     }).catch(function () { $('recmeta').textContent = 'The recorded takes are not published yet. Sign in to try your own.'; });
   }
   function showRecorded(t) {
