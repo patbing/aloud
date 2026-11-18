@@ -37,7 +37,7 @@
     d.appendChild(h('p', 'heard', 'Your take: ' + (t.heard || '(nothing)')));
     if (typeof t.baseline === 'string') d.appendChild(h('p', 'heard', 'Clean synthetic reading: ' + (t.baseline || '(nothing)')));
     box.appendChild(d);
-    if (t.coach) { box.appendChild(h('h3', null, 'Coach (' + C.COACH + ', from the scorecard only)')); t.coach.split('\n').filter(Boolean).forEach(function (l) { box.appendChild(h('p', 'tip', l)); }); }
+    if (t.coach) { box.appendChild(h('h3', null, 'Coach (' + C.COACH + ', from the scorecard only)')); t.coach.replace(/\*\*|__|`/g, '').split('\n').map(function (l) { return l.replace(/^\s*([-*•]|\d+[.)])\s+/, '').trim(); }).filter(Boolean).forEach(function (l) { box.appendChild(h('p', 'tip', l)); }); }
     else if (t.coachError) box.appendChild(h('p', 'warn', 'Coaching failed: ' + t.coachError + '. The score above does not depend on it.'));
   }
 

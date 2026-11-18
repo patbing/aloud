@@ -108,7 +108,7 @@
   }
 
   var COACH_RULES = 'You coach someone reading a sentence aloud in English. You only know the scorecard below, measured by code, not by you. ' +
-    'Do not invent mistakes it does not list. Write at most three short tips, one per line, each naming the exact word or number it is about. ' +
+    'Do not invent mistakes or pauses it does not list. Plain text, no markdown.Write at most three short tips, one per line, each naming the exact word or number it is about. ' +
     'Pace above 170 words per minute is fast, below 110 slow; pauses over 0.8 s inside a sentence break the flow. If there are no mistakes, say so in one line and give one pace tip.';
 
   function messages(c) {

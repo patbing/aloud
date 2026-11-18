@@ -1,0 +1,145 @@
+{
+ "recordedAt": "2026-11-18T09:33:56.712Z",
+ "models": [
+  "openai/whisper-large-v3",
+  "openai/tts-1",
+  "openai/gpt-5.4-nano"
+ ],
+ "voices": {
+  "reader": "nova",
+  "baseline": "alloy"
+ },
+ "spentUpperBound": 0.02881,
+ "takes": [
+  {
+   "id": "t1a",
+   "label": "Straight: The sixth sick sheikh's…",
+   "target": "The sixth sick sheikh's sixth sheep is sick.",
+   "said": "The sixth sick sheikh's sixth sheep is sick.",
+   "audio": "t1a.wav",
+   "heard": "The six-six shake, six sheep is sick.",
+   "baseline": "The sixth sick sheikh's sixth sheep is sick.",
+   "timing": {
+    "speechSec": 1.98,
+    "pauses": [],
+    "start": 0.02
+   },
+   "coach": "Mistakes in: **sixth** (heard “six”)  \nMistakes in: **sick** (heard “six”)  \nPace tip: **242 words per minute** — slow down slightly"
+  },
+  {
+   "id": "t1b",
+   "label": "Planted slip: The sixth sick sheikh's…",
+   "target": "The sixth sick sheikh's sixth sheep is sick.",
+   "said": "The sixth sick sheikh's sick sheep is sixth.",
+   "audio": "t1b.wav",
+   "heard": "The sixth sick shakes, sick sheep is six.",
+   "baseline": "The sixth sick sheikh's sixth sheep is sick.",
+   "timing": {
+    "speechSec": 2.4,
+    "pauses": [],
+    "start": 0.02
+   },
+   "coach": "Say **sheikh's** clearly (not “shakes”).  \nSay **sixth** clearly (not “sick”).  \nSay **sick** clearly (not “six”)."
+  },
+  {
+   "id": "t2a",
+   "label": "Straight: Thirteen thin thieves thought…",
+   "target": "Thirteen thin thieves thought they had thrown the thread through the thimble.",
+   "said": "Thirteen thin thieves thought they had thrown the thread through the thimble.",
+   "audio": "t2a.wav",
+   "heard": "Thirteen thin thieves thought they had thrown the thread through the thimble.",
+   "baseline": "Thirteen thin thieves thought they had thrown the thread through the thimble.",
+   "timing": {
+    "speechSec": 3.98,
+    "pauses": [],
+    "start": 0.02
+   },
+   "coach": "You read it correctly—no mistakes detected.  \nPace: you’re at 181 wpm (slightly fast); try to slow down a little for smoother delivery."
+  },
+  {
+   "id": "t2b",
+   "label": "Planted slip: Thirteen thin thieves thought…",
+   "target": "Thirteen thin thieves thought they had thrown the thread through the thimble.",
+   "said": "Thirteen thin thieves thought they threw the thread through the thimble.",
+   "audio": "t2b.wav",
+   "heard": "Thirteen thin thieves thought they threw the thread through the thimble.",
+   "baseline": "Thirteen thin thieves thought they had thrown the thread through the thimble.",
+   "timing": {
+    "speechSec": 3.52,
+    "pauses": [],
+    "start": 0.02
+   },
+   "coach": "Fix **had** (you missed it; say “thought they had thrown…”).  \nFix **thrown** (you swapped it with **threw**; say “had thrown…”).  \nPace tip: you’re at **205 WPM**—slow slightly to stay clear and steady."
+  },
+  {
+   "id": "t3a",
+   "label": "Straight: A proper copper coffee…",
+   "target": "A proper copper coffee pot sits on the third shelf from the left.",
+   "said": "A proper copper coffee pot sits on the third shelf from the left.",
+   "audio": "t3a.wav",
+   "heard": "A proper copper coffee pot sits on the third shelf from the left.",
+   "baseline": "A proper copper coffee pot sits on the third shelf from the left.",
+   "timing": {
+    "speechSec": 3.68,
+    "pauses": [
+     {
+      "at": 1.52,
+      "len": 0.38
+     }
+    ],
+    "start": 0.02
+   },
+   "coach": "No mistakes detected.  \nPace: 212 wpm is a bit fast—aim slightly slower while reading smoothly."
+  },
+  {
+   "id": "t3b",
+   "label": "Planted slip: A proper copper coffee…",
+   "target": "A proper copper coffee pot sits on the third shelf from the left.",
+   "said": "A proper coffee copper pot sits on the third shelf from the left.",
+   "audio": "t3b.wav",
+   "heard": "A proper coffee copper pot sits on the third shelf from the left.",
+   "baseline": "A proper copper coffee pot sits on the third shelf from the left.",
+   "timing": {
+    "speechSec": 3.64,
+    "pauses": [
+     {
+      "at": 2.8,
+      "len": 0.48
+     }
+    ],
+    "start": 0
+   },
+   "coach": "Swap the words **copper** and **coffee**.  \nSlow slightly—you're at **214 words/min** (fast).  \nKeep pauses smooth (last pause **0.48s** is okay)."
+  },
+  {
+   "id": "t4a",
+   "label": "Straight: Red lorry, yellow lorry,…",
+   "target": "Red lorry, yellow lorry, red lorry, yellow lorry, all the way to Worcestershire.",
+   "said": "Red lorry, yellow lorry, red lorry, yellow lorry, all the way to Worcestershire.",
+   "audio": "t4a.wav",
+   "heard": "Red lorry, yellow lorry, red lorry, yellow lorry, all the way to Worcestershire.",
+   "baseline": "Red lorry, yellow lorry, red lorry, yellow lorry, all the way to Worcestershire.",
+   "timing": {
+    "speechSec": 3.84,
+    "pauses": [],
+    "start": 0
+   },
+   "coach": "Perfect—no mistakes detected.  \nPace: you’re at 203 words/min, so slow down a bit to land closer to ~170."
+  },
+  {
+   "id": "t4b",
+   "label": "Planted slip: Red lorry, yellow lorry,…",
+   "target": "Red lorry, yellow lorry, red lorry, yellow lorry, all the way to Worcestershire.",
+   "said": "Red lorry, yellow lorry, red lolly, yellow lorry, all the way to Worcestershire.",
+   "audio": "t4b.wav",
+   "heard": "Red Lori, Yellow Lori, Red Lolly, Yellow Lori, all the way to Worcestershire.",
+   "baseline": "Red lorry, yellow lorry, red lorry, yellow lorry, all the way to Worcestershire.",
+   "timing": {
+    "speechSec": 4.22,
+    "pauses": [],
+    "start": 0.02
+   },
+   "coach": "Tip: Say **lorry** (not “lori” / “lolly”)—especially the word after **Red/Yellow**.  \nTip: Keep going smoothly through **Red lorry, yellow lorry**—no extra pause between them.  \nTip: Pace is fast (185 wpm); slightly slow down on **lorry** for clarity."
+  }
+ ]
+}

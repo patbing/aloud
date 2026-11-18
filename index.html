@@ -26,6 +26,14 @@
 <main>
   <p id="notice" class="notice" role="status" aria-live="polite"></p>
 
+  <section class="panel" aria-label="Recorded takes">
+    <h2>Recorded takes: try it without signing in</h2>
+    <p id="recmeta" class="fine"></p>
+    <div id="takes" class="takes"></div>
+    <audio id="recaudio" controls hidden></audio>
+    <div id="recresult" class="result"></div>
+  </section>
+
   <section class="panel" aria-label="Your turn">
     <h2>Your turn</h2>
     <label class="field">Sentence <select id="sentence"></select></label>
@@ -39,14 +47,6 @@
     </div>
     <audio id="playback" controls hidden></audio>
     <div id="liveresult" class="result" aria-live="polite"></div>
-  </section>
-
-  <section class="panel" aria-label="Recorded takes">
-    <h2>Recorded takes (no sign-in)</h2>
-    <p id="recmeta" class="fine"></p>
-    <div id="takes" class="takes"></div>
-    <audio id="recaudio" controls hidden></audio>
-    <div id="recresult" class="result"></div>
   </section>
 
   <section class="panel about" aria-label="How it works">

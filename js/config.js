@@ -3,8 +3,8 @@
   'use strict';
   window.AL = window.AL || {};
   window.AL.config = {
-    // Public App Key (pk_...) registered for this page's address. Safe to commit. Empty until the key is created.
-    APP_KEY: '',
+    // Public App Key (pk_...) registered for this page's address. Safe to commit.
+    APP_KEY: 'pk_UPzXN2el1WEJdyPE',
     REPO_URL: 'https://github.com/patbing/aloud',
     API: 'https://gen.pollinations.ai',
     TIMEOUT_MS: 60000,
