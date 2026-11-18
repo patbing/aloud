@@ -4,13 +4,21 @@
   'use strict';
   var RATE = 16000;
 
-  // Linear-interpolation resample to 16 kHz.
+  // Resample to 16 kHz. Downsampling averages each output window (a crude low-pass) so s, sh and th do not alias.
   function resample(x, from) {
     if (from === RATE) return Float32Array.from(x);
-    var n = Math.floor(x.length * RATE / from), out = new Float32Array(n), r = from / RATE;
-    for (var i = 0; i < n; i++) {
-      var p = i * r, k = Math.floor(p), t = p - k;
-      out[i] = (x[k] || 0) * (1 - t) + (x[k + 1] || 0) * t;
+    var n = Math.floor(x.length * RATE / from), out = new Float32Array(n), r = from / RATE, i;
+    if (r > 1) {
+      for (i = 0; i < n; i++) {
+        var a = Math.floor(i * r), b = Math.min(x.length, Math.max(a + 1, Math.floor((i + 1) * r))), s = 0;
+        for (var k = a; k < b; k++) s += x[k];
+        out[i] = s / (b - a);
+      }
+      return out;
+    }
+    for (i = 0; i < n; i++) {
+      var p = i * r, j = Math.floor(p), t = p - j;
+      out[i] = (x[j] || 0) * (1 - t) + (x[j + 1] || 0) * t;
     }
     return out;
   }
@@ -31,9 +39,13 @@
 
   // Start recording; resolves to { stop() -> Promise<{ samples, rate, wav }>, level() }.
   function record(maxSec) {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return Promise.reject(new Error('this browser gives no microphone access here'));
     return navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true } }).then(function (stream) {
-      var ac = ctx();
-      return ac.resume().then(function () {
+      var ac;
+      try { ac = ctx(); } catch (e) { stream.getTracks().forEach(function (t) { t.stop(); }); throw e; }
+      // Called inside the click, not awaited: a resume that never settles must not hang the page.
+      ac.resume();
+      try {
         var src = ac.createMediaStreamSource(stream);
         // shortcut: ScriptProcessorNode is deprecated but works in every browser without a separate worklet file; move to AudioWorklet if browsers drop it.
         var node = ac.createScriptProcessor(4096, 1, 1), chunks = [], total = 0, peak = 0, done = null;
@@ -44,11 +56,13 @@
           chunks.push(new Float32Array(d)); total += d.length;
           var m = 0; for (var i = 0; i < d.length; i++) m = Math.max(m, Math.abs(d[i])); peak = m;
         };
-        src.connect(node); node.connect(ac.destination);
+        src.connect(node); node.connect(ac.destination); // the output buffer is never written, so nothing is played back
+        var wall = setTimeout(function () { finish(); }, (maxSec + 1) * 1000); // in case the audio callback stalls
         var resolveStop;
         var stopped = new Promise(function (r) { resolveStop = r; });
         function finish() {
           if (done) return done;
+          clearTimeout(wall);
           node.disconnect(); src.disconnect();
           stream.getTracks().forEach(function (t) { t.stop(); });
           var all = new Float32Array(total), o = 0;
@@ -61,7 +75,11 @@
           return done;
         }
         return { stop: function () { finish(); return stopped; }, stopped: stopped, level: function () { return peak; } };
-      });
+      } catch (e) {
+        stream.getTracks().forEach(function (t) { t.stop(); });
+        ac.close();
+        throw e;
+      }
     });
   }
 
@@ -73,10 +91,9 @@
     }).then(function (buf) {
       var ch = buf.numberOfChannels, n = buf.length, mono = new Float32Array(n);
       for (var c = 0; c < ch; c++) { var d = buf.getChannelData(c); for (var i = 0; i < n; i++) mono[i] += d[i] / ch; }
-      ac.close();
       var samples = resample(mono, buf.sampleRate);
       return { samples: samples, rate: RATE, wav: new Blob([wavBytes(samples, RATE)], { type: 'audio/wav' }) };
-    });
+    }).finally(function () { ac.close(); });
   }
 
   var api = { RATE: RATE, resample: resample, wavBytes: wavBytes, record: record, decode: decode };

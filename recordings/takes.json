@@ -24,7 +24,7 @@
     "pauses": [],
     "start": 0.02
    },
-   "coach": "Mistakes in: **sixth** (heard “six”)  \nMistakes in: **sick** (heard “six”)  \nPace tip: **242 words per minute** — slow down slightly"
+   "coach": "Error on “sixth” (heard “six”).  \nError on “sick” (heard “six”).  \nPace tip: 242 wpm is fast—slow slightly to nearer 170–200 wpm."
   },
   {
    "id": "t1b",
@@ -39,7 +39,7 @@
     "pauses": [],
     "start": 0.02
    },
-   "coach": "Say **sheikh's** clearly (not “shakes”).  \nSay **sixth** clearly (not “sick”).  \nSay **sick** clearly (not “six”)."
+   "coach": "Watch “sheikhs” (heard “shakes”).\nWatch “sixth” (heard “sick”).\nPace is fast (200 wpm); slow slightly."
   },
   {
    "id": "t2a",
@@ -54,7 +54,7 @@
     "pauses": [],
     "start": 0.02
    },
-   "coach": "You read it correctly—no mistakes detected.  \nPace: you’re at 181 wpm (slightly fast); try to slow down a little for smoother delivery."
+   "coach": "No mistakes detected: all 12/12 words read correctly.  \nPace is fast (181 wpm); aim slightly closer to 170 wpm.  \nMind clarity on tricky words: Thirteen, thin, thieves."
   },
   {
    "id": "t2b",
@@ -69,7 +69,7 @@
     "pauses": [],
     "start": 0.02
    },
-   "coach": "Fix **had** (you missed it; say “thought they had thrown…”).  \nFix **thrown** (you swapped it with **threw**; say “had thrown…”).  \nPace tip: you’re at **205 WPM**—slow slightly to stay clear and steady."
+   "coach": "Tip: Say “had” (it was missed).  \nTip: Don’t swap “thrown” and “threw” — use “thrown”.  \nPace tip: 188 words per minute — slightly fast; aim a touch slower."
   },
   {
    "id": "t3a",
@@ -89,7 +89,7 @@
     ],
     "start": 0.02
    },
-   "coach": "No mistakes detected.  \nPace: 212 wpm is a bit fast—aim slightly slower while reading smoothly."
+   "coach": "No pronunciation mistakes—100% correct.  \nTip: Slow slightly from 212 words per minute toward 170–190.  \nTip: Keep the 0.38s pause from feeling like a separation inside a phrase."
   },
   {
    "id": "t3b",
@@ -109,7 +109,7 @@
     ],
     "start": 0
    },
-   "coach": "Swap the words **copper** and **coffee**.  \nSlow slightly—you're at **214 words/min** (fast).  \nKeep pauses smooth (last pause **0.48s** is okay)."
+   "coach": "Say “copper” (not “coffee”) and “coffee” (not “copper”)—they were swapped.\nTry to slow slightly from 214 words per minute.\nKeep the internal pause at 0.48s or less."
   },
   {
    "id": "t4a",
@@ -124,7 +124,7 @@
     "pauses": [],
     "start": 0
    },
-   "coach": "Perfect—no mistakes detected.  \nPace: you’re at 203 words/min, so slow down a bit to land closer to ~170."
+   "coach": "All words correct: 13/13, no mistakes.  \nPace is fast (203 wpm); try slightly slower.  \nKeep no extra pauses—flow continuously (no pauses detected)."
   },
   {
    "id": "t4b",
@@ -139,7 +139,8 @@
     "pauses": [],
     "start": 0.02
    },
-   "coach": "Tip: Say **lorry** (not “lori” / “lolly”)—especially the word after **Red/Yellow**.  \nTip: Keep going smoothly through **Red lorry, yellow lorry**—no extra pause between them.  \nTip: Pace is fast (185 wpm); slightly slow down on **lorry** for clarity."
+   "coach": "You swapped “lorry” (heard: “lori/lolly”)—say it clearly as “lor-ree”.\nRate is fast (185 wpm); try to slow slightly for easier accuracy.\nNo extra pauses detected inside the sentence."
   }
- ]
+ ],
+ "coachRedoneAt": "2026-11-18T09:44:33.387Z"
 }

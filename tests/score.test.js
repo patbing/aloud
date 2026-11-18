@@ -3,7 +3,25 @@ const assert = require('node:assert/strict');
 const S = require('../js/score.js');
 
 test('words normalise case, punctuation and small numbers', () => {
-  assert.deepEqual(S.words('The 3 quick, brown-fox’s "jumps"!'), ['the', 'three', 'quick', 'brown', "fox's", 'jumps']);
+  assert.deepEqual(S.words('The 3 quick, brown-fox’s "jumps"!'), ['the', 'three', 'quick', 'brown', 'foxs', 'jumps']);
+  assert.deepEqual(S.words("the 6th sheikh's 21st"), ['the', 'sixth', 'sheikhs', '21st']);
+  assert.deepEqual(S.words('?! 안녕'), []);
+});
+
+test('possessives and ordinals the ear cannot tell apart are not mistakes', () => {
+  const s = S.score("The sixth sick sheikh's sixth sheep is sick.", 'The 6th sick sheikhs sixth sheep is sick');
+  assert.equal(s.right, 8);
+});
+
+test('a clean reading that comes back mostly wrong is ignored, not used to excuse everything', () => {
+  const s = S.score('one two three four', 'one too three for', '');
+  assert.equal(s.baselineDropped, true); assert.equal(s.asrWords, 0); assert.equal(s.counted, 4); assert.equal(s.right, 2);
+});
+
+test('pace counts the words said, not the target', () => {
+  const s = S.score('a b c d e f g h i j', 'a b c');
+  assert.equal(S.spoken(s), 3);
+  assert.equal(S.card('a b c d e f g h i j', s, { speechSec: 1, pauses: [] }).words_per_minute, 180);
 });
 
 test('a perfect reading is all ok', () => {

@@ -13,6 +13,9 @@ test('wav bytes have a valid 16 kHz mono header', () => {
   assert.equal(new DataView(b.buffer).getUint32(24, true), 16000);
   assert.equal(b.length, 44 + 8);
   assert.equal(AU.resample(new Float32Array(48000), 48000).length, 16000);
+  const alt = Float32Array.from({ length: 48000 }, (_, i) => (i % 2 ? 1 : -1)); // 24 kHz tone, above what 16 kHz can hold
+  const down = AU.resample(alt, 48000);
+  assert.ok(Math.max(...down.map(Math.abs)) < 0.5, 'averaging removes most of a tone above the new Nyquist');
 });
 
 test('every recorded take has its audio and rescoring works', { skip: !existsSync(file) && 'no recordings yet' }, () => {

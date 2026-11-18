@@ -28,11 +28,13 @@
     var facts = [sc.counted ? sc.right + ' of ' + sc.counted + ' words heard right' : 'no countable words'];
     if (sc.asrWords) facts.push(sc.asrWords + ' left out (transcriber missed them on the clean reading too)');
     if (t.timing) {
-      var w = S.wpm(sc.total, t.timing.speechSec);
+      var w = S.wpm(S.spoken(sc), t.timing.speechSec);
       if (w) facts.push(w + ' words per minute');
       facts.push(t.timing.pauses.length ? t.timing.pauses.length + ' pause' + (t.timing.pauses.length > 1 ? 's' : '') + ' (' + t.timing.pauses.map(function (p) { return p.len.toFixed(1) + ' s'; }).join(', ') + ')' : 'no pauses over 0.35 s');
     }
     box.appendChild(h('p', 'facts', facts.join(' · ')));
+    if (t.baselineError) box.appendChild(h('p', 'warn', 'The transcriber check failed (' + t.baselineError + '), so every word is counted.'));
+    else if (sc.baselineDropped) box.appendChild(h('p', 'warn', 'The clean reading came back mostly wrong, so the transcriber check was ignored and every word is counted.'));
     var d = h('details', 'req'); d.appendChild(h('summary', null, 'What the transcriber wrote'));
     d.appendChild(h('p', 'heard', 'Your take: ' + (t.heard || '(nothing)')));
     if (typeof t.baseline === 'string') d.appendChild(h('p', 'heard', 'Clean synthetic reading: ' + (t.baseline || '(nothing)')));
@@ -73,6 +75,7 @@
     return tr * sec + base + coach;
   }
   function freeCheck() {
+    if (S.words(target()).length < 2) return 'Not run: the sentence needs at least two English words.';
     var p = app.prices || {}, bad = [C.TRANSCRIBE, C.COACH].concat($('baseline').checked ? [C.SPEAK] : []).filter(function (id) { return !p[id] || p[id].paidOnly; });
     return bad.length ? 'Not run: ' + bad.join(', ') + (app.prices ? ' is paid-only or missing from the model list today.' : ' (model list not loaded).') : null;
   }
@@ -81,7 +84,7 @@
     if (app.busy || !app.key) return;
     var stop = freeCheck(); if (stop) return say(stop, true);
     app.busy = true; render();
-    A.record(C.MAX_SEC).then(function (r) {
+    Promise.resolve().then(function () { return A.record(C.MAX_SEC); }).then(function (r) {
       app.take = r; say('Recording… read the sentence, then press Stop (' + C.MAX_SEC + ' s at most).');
       r.stopped.then(function (got) { app.take = null; run(got); });
       render();
@@ -92,6 +95,7 @@
     var f = ev.target.files && ev.target.files[0]; ev.target.value = '';
     if (!f || app.busy || !app.key) return;
     var stop = freeCheck(); if (stop) return say(stop, true);
+    if (f.size > 5e6) return say('That file is over 5 MB; keep uploads to ' + C.MAX_SEC + ' seconds.', true);
     app.busy = true; render();
     A.decode(f).then(function (got) {
       if (got.samples.length > A.RATE * C.MAX_SEC) throw new Error('longer than ' + C.MAX_SEC + ' s');
@@ -100,7 +104,8 @@
   }
 
   function run(got) {
-    var t = { target: target() }, key = app.key;
+    var t = { target: target() }, key = app.key, stop = freeCheck();
+    if (!key || stop) { app.busy = false; say(key ? stop : 'Signed out: the take was not sent.', true); render(); return; }
     app.ctrl = new AbortController(); var sig = app.ctrl.signal;
     t.timing = S.pauses(got.samples, got.rate);
     if (!t.timing.speechSec) { app.busy = false; say('That take was silent. Check the microphone and try again.', true); render(); return; }
@@ -111,12 +116,12 @@
     var base = !$('baseline').checked ? Promise.resolve(null) : N.speak(key, t.target, sig).then(function (s) {
       if (!s.ok) return s;
       return A.decode(s.blob).then(function (d) { return N.transcribe(key, d.wav, sig); });
-    });
+    }).catch(function (e) { return { ok: false, error: String((e && e.message) || e) }; });
     Promise.all([mine, base]).then(function (r) {
       if (!r[0].ok) { t.error = 'Transcription failed: ' + r[0].error + '. No score without a transcript.'; return; }
       t.heard = r[0].text;
       if (r[1] && r[1].ok) t.baseline = r[1].text;
-      else if (r[1]) say('The transcriber check failed (' + r[1].error + '); every word is counted.', true);
+      else if (r[1]) t.baselineError = r[1].error;
       say('Asking the coach…');
       return N.coach(key, S.messages(S.card(t.target, S.score(t.target, t.heard, t.baseline), t.timing)), sig).then(function (c) {
         if (c.ok) t.coach = c.text; else t.coachError = c.error;
