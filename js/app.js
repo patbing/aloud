@@ -33,6 +33,7 @@
       facts.push(t.timing.pauses.length ? t.timing.pauses.length + ' pause' + (t.timing.pauses.length > 1 ? 's' : '') + ' (' + t.timing.pauses.map(function (p) { return p.len.toFixed(1) + ' s'; }).join(', ') + ')' : 'no pauses over 0.35 s');
     }
     box.appendChild(h('p', 'facts', facts.join(' · ')));
+    if (t.note) box.appendChild(h('p', 'warn', t.note));
     if (t.baselineError) box.appendChild(h('p', 'warn', 'The transcriber check failed (' + t.baselineError + '), so every word is counted.'));
     else if (sc.baselineDropped) box.appendChild(h('p', 'warn', 'The clean reading came back mostly wrong, so the transcriber check was ignored and every word is counted.'));
     var d = h('details', 'req'); d.appendChild(h('summary', null, 'What the transcriber wrote'));
@@ -55,7 +56,8 @@
         list.appendChild(b);
       });
       $('recmeta').textContent = rec.takes.length + ' takes recorded ' + rec.recordedAt.slice(0, 10) + ' with ' + rec.models.join(', ') + '. The readers are synthetic voices; the transcripts and coaching are real model replies, the score is recomputed here.';
-      if (rec.takes.length) showRecorded(rec.takes[0]);
+      // Open on a take where a planted slip is caught: it shows what the scorer is for.
+      if (rec.takes.length) showRecorded(rec.takes.filter(function (t) { return t.id === 't2b'; })[0] || rec.takes[0]);
     }).catch(function () { $('recmeta').textContent = 'The recorded takes are not published yet. Sign in to try your own.'; });
   }
   function showRecorded(t) {
@@ -77,7 +79,11 @@
   function freeCheck() {
     if (S.words(target()).length < 2) return 'Not run: the sentence needs at least two English words.';
     var p = app.prices || {}, bad = [C.TRANSCRIBE, C.COACH].concat($('baseline').checked ? [C.SPEAK] : []).filter(function (id) { return !p[id] || p[id].paidOnly; });
-    return bad.length ? 'Not run: ' + bad.join(', ') + (app.prices ? ' is paid-only or missing from the model list today.' : ' (model list not loaded).') : null;
+    if (bad.length) return 'Not run: ' + bad.join(', ') + (app.prices ? ' is paid-only or missing from the model list today.' : ' (model list not loaded).');
+    var est = estimate(C.MAX_SEC, target().length);
+    if (est == null) return 'Not run: no price for these models, so the cost cannot be checked.';
+    if (app.spent + est > C.CAP) return 'Not run: this visit has spent ≈ ' + fmtP(app.spent) + ' and the next take could pass the ' + fmtP(C.CAP) + ' cap. Reload the page to start a new visit.';
+    return null;
   }
 
   function startRec() {

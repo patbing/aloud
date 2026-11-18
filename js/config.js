@@ -9,6 +9,8 @@
     API: 'https://gen.pollinations.ai',
     TIMEOUT_MS: 60000,
     MAX_SEC: 15,
+    // Pollen this page may spend per visit (estimated from listed prices). A take that could pass it is not sent.
+    CAP: 0.05,
     // Free (paid_only: false) defaults, checked against the live model list when the page loads and before every take.
     TRANSCRIBE: 'openai/whisper-large-v3',
     SPEAK: 'openai/tts-1',

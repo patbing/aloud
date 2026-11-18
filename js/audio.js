@@ -40,11 +40,11 @@
   // Start recording; resolves to { stop() -> Promise<{ samples, rate, wav }>, level() }.
   function record(maxSec) {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return Promise.reject(new Error('this browser gives no microphone access here'));
+    var ac;
+    try { ac = ctx(); } catch (e) { return Promise.reject(e); }
+    // Resumed inside the click, before the permission prompt ends the user gesture; not awaited, so a resume that never settles cannot hang the page.
+    ac.resume();
     return navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true } }).then(function (stream) {
-      var ac;
-      try { ac = ctx(); } catch (e) { stream.getTracks().forEach(function (t) { t.stop(); }); throw e; }
-      // Called inside the click, not awaited: a resume that never settles must not hang the page.
-      ac.resume();
       try {
         var src = ac.createMediaStreamSource(stream);
         // shortcut: ScriptProcessorNode is deprecated but works in every browser without a separate worklet file; move to AudioWorklet if browsers drop it.
@@ -80,7 +80,7 @@
         ac.close();
         throw e;
       }
-    });
+    }, function (e) { ac.close(); throw e; });
   }
 
   // Any audio blob (uploaded file, TTS reply, recorded take) to 16 kHz mono samples.

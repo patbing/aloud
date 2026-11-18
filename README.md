@@ -14,7 +14,7 @@ Without signing in you can replay recorded takes: a synthetic reader saying each
 
 ## Run it
 
-Static files, no build. Serve the folder (for example `npx serve`) and open it. Sign in with Pollinations Connect to record; you pay with your own Pollen and the defaults are free-tier models. Tests: `npm test`.
+Static files, no build. Serve the folder (for example `npx serve`) and open it. Sign in with Pollinations Connect to record; you pay with your own Pollen and the defaults are free-tier models. The page will not send a take that could push one visit past 0.05 Pollen (`CAP` in `js/config.js`). Tests: `npm test`.
 
 ## Files
 

@@ -71,3 +71,10 @@ test('the coach card carries only measured facts', () => {
   const m = S.messages(c);
   assert.equal(m[0].role, 'system'); assert.match(m[1].content, /"word":"cat"/);
 });
+
+test('a word the reader skipped counts, even if the clean reading only mis-heard it', () => {
+  const s = S.score('the sixth sheep is sick', 'the sheep is sick', 'the six sheep is sick');
+  assert.equal(s.asrWords, 0); assert.equal(s.counted, 5); assert.equal(s.right, 4);
+  const same = S.score('the sixth sheep is sick', 'the six sheep is sick', 'the six sheep is sick');
+  assert.equal(same.asrWords, 1); assert.equal(same.counted, 4); assert.equal(same.right, 4);
+});

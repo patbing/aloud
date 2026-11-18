@@ -24,7 +24,8 @@
     "pauses": [],
     "start": 0.02
    },
-   "coach": "Error on “sixth” (heard “six”).  \nError on “sick” (heard “six”).  \nPace tip: 242 wpm is fast—slow slightly to nearer 170–200 wpm."
+   "coach": "Error on “sixth” (heard “six”).  \nError on “sick” (heard “six”).  \nPace tip: 242 wpm is fast—slow slightly to nearer 170–200 wpm.",
+   "note": "Limit: this was read straight by a synthetic voice, yet the transcriber wrote \"six-six shake\" while the clean reading in another voice came back perfect. The transcriber check only excuses words it also misses on the clean reading, so a voice the transcriber finds hard can still lose points here."
   },
   {
    "id": "t1b",

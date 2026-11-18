@@ -21,7 +21,8 @@
     });
   }
 
-  function send(key, path, init, signal) {
+  // read(res) -> Promise<fields>: the body is read before the timeout is cleared, so a stalled body still times out.
+  function send(key, path, init, signal, read) {
     if (signal && signal.aborted) return Promise.resolve({ ok: false, status: 0, error: 'cancelled', cancelled: true });
     var ctrl = new AbortController(), timedOut = false, t0 = Date.now();
     var timer = setTimeout(function () { timedOut = true; ctrl.abort(); }, C.TIMEOUT_MS);
@@ -36,7 +37,7 @@
         var msg = (j && j.error && (j.error.message || j.error)) || t.slice(0, 200);
         return { ok: false, status: res.status, ms: ms, error: 'HTTP ' + res.status + ': ' + String(msg).slice(0, 200) };
       });
-      return { ok: true, status: res.status, ms: ms, res: res };
+      return read(res).then(function (v) { return Object.assign({ ok: true, status: res.status, ms: ms }, v); });
     }).catch(function (e) {
       if (signal && signal.aborted && !timedOut) return { ok: false, status: 0, error: 'cancelled', cancelled: true };
       return { ok: false, status: 0, ms: Date.now() - t0, error: timedOut ? 'timed out' : String((e && e.message) || e) };
@@ -50,27 +51,24 @@
     fd.append('model', C.TRANSCRIBE);
     fd.append('language', 'en');
     fd.append('temperature', '0');
-    return send(key, '/v1/audio/transcriptions', { method: 'POST', body: fd }, signal).then(function (r) {
-      if (!r.ok) return r;
-      return r.res.json().then(function (j) { return { ok: true, ms: r.ms, text: String((j && j.text) || '').trim() }; });
+    return send(key, '/v1/audio/transcriptions', { method: 'POST', body: fd }, signal, function (res) {
+      return res.json().then(function (j) { return { text: String((j && j.text) || '').trim() }; });
     });
   }
 
   function speak(key, text, signal) {
     return send(key, '/v1/audio/speech', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: C.SPEAK, input: text, voice: C.VOICE, response_format: 'wav' }) }, signal).then(function (r) {
-      if (!r.ok) return r;
-      return r.res.blob().then(function (b) { return { ok: true, ms: r.ms, blob: b }; });
+      body: JSON.stringify({ model: C.SPEAK, input: text, voice: C.VOICE, response_format: 'wav' }) }, signal, function (res) {
+      return res.blob().then(function (b) { return { blob: b }; });
     });
   }
 
   function coach(key, messages, signal) {
     var body = { model: C.COACH, messages: messages, max_tokens: 220, seed: Math.floor(Math.random() * 2147483647) };
-    return send(key, '/v1/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }, signal).then(function (r) {
-      if (!r.ok) return r;
-      return r.res.json().then(function (j) {
+    return send(key, '/v1/chat/completions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }, signal, function (res) {
+      return res.json().then(function (j) {
         var c = j && j.choices && j.choices[0], t = c && c.message && typeof c.message.content === 'string' ? c.message.content.trim() : '';
-        return t ? { ok: true, ms: r.ms, text: t, usage: j.usage } : { ok: false, error: 'empty reply' };
+        return t ? { text: t, usage: j.usage } : { ok: false, error: 'empty reply' };
       });
     });
   }

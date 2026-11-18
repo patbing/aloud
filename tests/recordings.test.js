@@ -5,6 +5,8 @@ const path = require('node:path');
 const S = require('../js/score.js');
 const AU = require('../js/audio.js');
 
+// Scores the page shows for the published takes; a scorer change that moves one must be deliberate.
+const PINNED = { t1a: '4/8', t1b: '5/8', t2a: '12/12', t2b: '10/12', t3a: '13/13', t3b: '11/13', t4a: '13/13', t4b: '9/13' };
 const file = path.join(__dirname, '../recordings/takes.json');
 
 test('wav bytes have a valid 16 kHz mono header', () => {
@@ -28,6 +30,7 @@ test('every recorded take has its audio and rescoring works', { skip: !existsSyn
     assert.equal(typeof t.heard, 'string');
     const s = S.score(t.target, t.heard, t.baseline);
     assert.equal(s.total, S.words(t.target).length);
+    assert.equal(s.right + '/' + s.counted, PINNED[t.id], t.id + ' score');
     assert.ok(t.coach || t.coachError, t.id + ' coach reply or its failure');
   }
 });

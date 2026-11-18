@@ -49,6 +49,8 @@ button.primary { background: var(--accent); color: var(--accent-ink); border: 0;
 button.primary.on { background: var(--no); }
 .filebtn { border: 1px solid var(--line); border-radius: 999px; padding: 10px 16px; cursor: pointer; font-size: 14px; }
 .filebtn input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.filebtn:has(input:disabled) { opacity: .5; cursor: not-allowed; }
+.target, .w, .heard, .tip { overflow-wrap: anywhere; }
 audio { display: block; width: 100%; margin: 8px 0; }
 .target { font: 18px/1.4 var(--serif); margin: 10px 0 6px; }
 .words { display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; font-size: 17px; }
