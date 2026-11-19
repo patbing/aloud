@@ -49,11 +49,33 @@
     <div id="liveresult" class="result" aria-live="polite"></div>
   </section>
 
+  <section class="panel" aria-label="Sing it">
+    <h2>Sing it: see which notes were in tune</h2>
+    <p class="hint">Play a short tune, sing it back in any octave, one “da” per note, and code measures every note in cents. No sign-in needed: the pitch reading runs in this tab.</p>
+    <div class="row2">
+      <label class="field">Tune <select id="tune"></select></label>
+      <label class="field">Play it for a <select id="key"></select></label>
+    </div>
+    <div class="takes">
+      <button id="play" type="button" class="take">&#9654; Play the tune</button>
+      <button id="demo1" type="button" class="take">Sample: steady synthetic singer</button>
+      <button id="demo2" type="button" class="take">Sample: one note flat, one skipped</button>
+    </div>
+    <label class="check"><input id="singcoach" type="checkbox"> Ask the coach too (<span id="singcoachcost">needs sign-in</span>)</label>
+    <div class="controls">
+      <button id="sing" type="button" class="primary">Sing</button>
+      <label class="filebtn">Upload singing <input id="singfile" type="file" accept="audio/*"></label>
+    </div>
+    <audio id="singplayback" controls hidden></audio>
+    <div id="singresult" class="result" aria-live="polite"></div>
+  </section>
+
   <section class="panel about" aria-label="How it works">
     <h2>How it works</h2>
     <div class="cols3">
       <div><h3>Code scores, not a model</h3><p>Your take goes to <code>openai/whisper-large-v3</code> with no hint of the sentence. Code lines its transcript up with the sentence word by word: heard right, heard as something else, not heard, or extra.</p></div>
       <div><h3>The transcriber is tested too</h3><p>A synthetic voice (<code>openai/tts-1</code>) reads the same sentence and the same transcriber writes it down. A word it gets wrong even from a clean reading is greyed out and not counted.</p></div>
+      <div><h3>The pitch reader is tested too</h3><p>For singing, the same pitch reader listens to a clean tone of the tune in your octave mixed with the quiet part of your own take. A note it misreads even then is greyed out and not counted.</p></div>
       <div><h3>Pace and pauses from your audio</h3><p>Words per minute and pauses come from the recording's own loudness in this browser. The coach model only reads that scorecard and may not invent mistakes it does not list.</p></div>
     </div>
   </section>
@@ -65,6 +87,7 @@
 
 <script src="js/config.js"></script>
 <script src="js/score.js"></script>
+<script src="js/pitch.js"></script>
 <script src="js/audio.js"></script>
 <script src="js/net.js"></script>
 <script src="js/app.js"></script>

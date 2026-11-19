@@ -16,6 +16,14 @@
     SPEAK: 'openai/tts-1',
     VOICE: 'alloy',
     COACH: 'openai/gpt-5.4-nano',
+    // Sing it: steps are [semitones above the key note, beats]. Any octave counts; the key note sets what Play plays.
+    TUNES: [
+      { name: 'Five notes up', bpm: 90, steps: [[0, 1], [2, 1], [4, 1], [5, 1], [7, 2]] },
+      { name: 'Up and back down', bpm: 90, steps: [[0, 1], [4, 1], [7, 1], [12, 2], [7, 1], [4, 1], [0, 2]] },
+      { name: 'Twinkle, first line', bpm: 100, steps: [[0, 1], [0, 1], [7, 1], [7, 1], [9, 1], [9, 1], [7, 2]] },
+      { name: 'Do-re-mi to the top', bpm: 100, steps: [[0, 1], [2, 1], [4, 1], [5, 1], [7, 1], [9, 1], [11, 1], [12, 2]] }
+    ],
+    KEYS: [{ label: 'Low voice (C3)', midi: 48 }, { label: 'Middle voice (G3)', midi: 55 }, { label: 'High voice (C4)', midi: 60 }],
     SENTENCES: [
       'Thirteen thin thieves thought they had thrown the thread through the thimble.',
       'A proper copper coffee pot sits on the third shelf from the left.',

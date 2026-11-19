@@ -74,3 +74,18 @@ audio { display: block; width: 100%; margin: 8px 0; }
 .foot { max-width: 980px; margin: 0 auto; padding: 0 20px 30px; color: var(--muted); font-size: 12.5px; }
 @media (max-width: 560px) { .top { padding: 10px 14px; } main { padding: 8px 14px 20px; } .panel { padding: 14px; } }
 .take.human { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.row2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0 14px; }
+.n { display: inline-flex; flex-direction: column; align-items: center; padding: 3px 9px; border-radius: 6px; border: 1px solid transparent; font-size: 16px; }
+.n small { font: 11.5px var(--mono); }
+.n.in { background: color-mix(in srgb, var(--ok) 15%, transparent); color: var(--ok); }
+.n.close { background: color-mix(in srgb, var(--part) 15%, transparent); color: var(--part); }
+.n.off, .n.miss { background: color-mix(in srgb, var(--no) 15%, transparent); color: var(--no); font-weight: 600; }
+.n.miss { text-decoration: line-through; }
+.n.extra { border-color: var(--part); color: var(--part); font-style: italic; }
+.n.excused { color: var(--muted); border-color: var(--line); border-style: dashed; background: none; }
+.trace { display: block; width: 100%; height: auto; margin: 8px 0; background: var(--bg); border-radius: 8px; }
+.trace .grid { stroke: var(--line); stroke-width: 1; }
+.trace .lbl { fill: var(--muted); font: 11px var(--mono); }
+.trace .want { stroke-width: 9; stroke-linecap: round; opacity: .45; }
+.trace .want.in { stroke: var(--ok); } .trace .want.close { stroke: var(--part); } .trace .want.off { stroke: var(--no); } .trace .want.excused { stroke: var(--muted); }
+.trace .sung { fill: none; stroke: var(--accent); stroke-width: 2; }
