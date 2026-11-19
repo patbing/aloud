@@ -16,7 +16,7 @@ Without signing in you can replay recorded takes: a synthetic reader saying each
 
 Pick a short tune, press Play, and sing it back in your own key, one "da" per note. Code reads your pitch every 20 ms in the browser (YIN), splits it into held notes, lines them up with the tune note by note and shows how many cents each one was off, on a pitch trace. Singing higher or lower than played is not a mistake: every key is tried and each note is judged against the key you chose. No sign-in and no model call: the coach is optional.
 
-The pitch reader is tested too. It also reads a clean tone of the tune in your key mixed with the quietest part of your own take (your room). A note it misreads even then is greyed out and not counted; if it misreads most of them, the take is marked too noisy to score instead. Two code-made sample singers (one straight, one with a flat note and a skipped one) show the scoring without a microphone.
+The pitch reader is tested too. It also reads a clean tone of the tune in your key mixed with the quietest part of your own take (your room). A note it misreads even then is greyed out and not counted; if it misreads most of them, the take is marked too noisy to score instead. Without a microphone you can score a real person singing Twinkle, and two code-made sample singers (one straight, one with a flat note and a skipped one).
 
 ## Run it
 

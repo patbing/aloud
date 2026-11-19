@@ -155,7 +155,9 @@
   function trace(sc, target, sec) {
     var Wd = 900, Ht = 220, L = 44, pad = 6;
     var ms = target.map(function (t) { return t.m + sc.shift; }), lo = Math.min.apply(null, ms) - 2, hi = Math.max.apply(null, ms) + 2;
-    function X(t) { return L + (Wd - L - pad) * Math.min(1, t / sec); }
+    // Only the stretch with voice in it, so a silent lead-in does not squash the notes.
+    var on = sc.frames.filter(function (f) { return f.m != null; }), t0 = on.length ? Math.max(0, on[0].t - 0.2) : 0, t1 = on.length ? Math.min(sec, on[on.length - 1].t + 0.2) : sec;
+    function X(t) { return L + (Wd - L - pad) * Math.max(0, Math.min(1, (t - t0) / (t1 - t0 || 1))); }
     function Y(m) { return pad + (Ht - 2 * pad) * (hi - Math.max(lo, Math.min(hi, m))) / (hi - lo); }
     var g = sv('svg', { viewBox: '0 0 ' + Wd + ' ' + Ht, class: 'trace', role: 'img', 'aria-label': 'Pitch over time: your voice as a line, the written notes as bars' });
     ms.filter(function (m, i) { return ms.indexOf(m) === i; }).forEach(function (m) {
@@ -257,6 +259,17 @@
     }, 0);
   }
 
+  // A real take: a person singing the first line of Twinkle on "da", recorded on this page. Scored here like any take.
+  function human() {
+    if (app.busy) return;
+    app.busy = true; render();
+    $('tune').value = '2';
+    fetch('recordings/sing_twinkle_human.wav').then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.blob(); })
+      .then(A.decode).then(function (got) {
+        scoreSung(got, 'a real person', 'A real person singing on "da", recorded on this page. The notes are measured by the same code your own take gets.');
+      }).catch(function (e) { app.busy = false; say('Could not load the recorded take: ' + (e && e.message || e), true); render(); });
+  }
+
   function singStart() {
     if (app.busy) return;
     stopTune();
@@ -306,7 +319,7 @@
     $('sing').disabled = app.busy && !singing;
     $('sing').textContent = singing ? 'Stop' : 'Sing';
     $('sing').classList.toggle('on', singing);
-    ['play', 'singfile', 'demo1', 'demo2'].forEach(function (id) { $(id).disabled = app.busy; });
+    ['play', 'human', 'singfile', 'demo1', 'demo2'].forEach(function (id) { $(id).disabled = app.busy; });
     $('singcoach').disabled = !signed;
     $('singcoachcost').textContent = signed ? 'about ' + fmtP(coachCost()) + ' of your Pollen' : 'needs sign-in';
     var est = estimate(8, target().length);
@@ -324,6 +337,7 @@
     C.KEYS.forEach(function (k) { var o = h('option', null, k.label); o.value = k.midi; $('key').appendChild(o); });
     $('key').value = 55;
     $('play').addEventListener('click', trusted(playTune));
+    $('human').addEventListener('click', trusted(human));
     $('demo1').addEventListener('click', trusted(function () { demo(false); }));
     $('demo2').addEventListener('click', trusted(function () { demo(true); }));
     $('sing').addEventListener('click', trusted(function () { if (app.stake) app.stake.stop(); else singStart(); }));
