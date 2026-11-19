@@ -152,8 +152,8 @@
   function tune() { return C.TUNES[Number($('tune').value)] || C.TUNES[0]; }
   function written() { return P.written(tune(), Number($('key').value)); }
 
-  function trace(sc, target, sec) {
-    var Wd = 900, Ht = 220, L = 44, pad = 6;
+  function trace(sc, target, sec, width) {
+    var Wd = Math.max(300, Math.min(1200, width || 900)), Ht = Wd < 600 ? 200 : 220, L = 44, pad = 6; // drawn at the box's own width so phone labels stay readable
     var ms = target.map(function (t) { return t.m + sc.shift; }), lo = Math.min.apply(null, ms) - 2, hi = Math.max.apply(null, ms) + 2;
     // Only the stretch with voice in it, so a silent lead-in does not squash the notes.
     var on = sc.frames.filter(function (f) { return f.m != null; }), t0 = on.length ? Math.max(0, on[0].t - 0.2) : 0, t1 = on.length ? Math.min(sec, on[on.length - 1].t + 0.2) : sec;
@@ -182,7 +182,7 @@
     box.textContent = '';
     box.appendChild(h('p', 'target', s.tune + (s.label ? ' · ' + s.label : '')));
     if (!sc.voiced || !sc.sung.length) { box.appendChild(h('p', 'warn', 'No held notes were heard. Sing louder or closer, one vowel per note, each held about half a second.')); return; }
-    box.appendChild(trace(sc, target, s.sec));
+    box.appendChild(trace(sc, target, s.sec, box.clientWidth));
     var line = h('p', 'words');
     sc.ops.forEach(function (o) {
       if (o.i == null) { var x = h('span', 'n extra', '+' + P.name(o.m)); x.title = 'an extra note, not in the tune'; line.appendChild(x); return; }
@@ -213,13 +213,14 @@
     return null;
   }
 
-  function scoreSung(got, label, note) {
-    var target = written(), s = { tune: tune().name, label: label, note: note, target: target, sec: got.samples.length / got.rate };
+  // recorded: a coach reply saved with a recorded take, shown instead of asking the coach again.
+  function scoreSung(got, label, note, recorded) {
+    var target = written(), s = { tune: tune().name, label: label, note: note, target: target, sec: got.samples.length / got.rate, coach: recorded };
     s.sc = P.score(got.samples, got.rate, target);
     $('singplayback').src = URL.createObjectURL(got.wav); $('singplayback').hidden = false;
     renderSung($('singresult'), s);
     var why = coachCheck();
-    if (!$('singcoach').checked || !s.sc.sung.length) { app.busy = false; render(); return; }
+    if (recorded || !$('singcoach').checked || !s.sc.sung.length) { app.busy = false; render(); return; }
     if (why) { say('Coach not asked: ' + why + '.', true); app.busy = false; render(); return; }
     app.ctrl = new AbortController();
     say('Asking the coach…');
@@ -263,11 +264,12 @@
   function human() {
     if (app.busy) return;
     app.busy = true; render();
-    $('tune').value = '2';
-    fetch('recordings/sing_twinkle_human.wav').then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.blob(); })
-      .then(A.decode).then(function (got) {
-        scoreSung(got, 'a real person', 'A real person singing on "da", recorded on this page. The notes are measured by the same code your own take gets.');
-      }).catch(function (e) { app.busy = false; say('Could not load the recorded take: ' + (e && e.message || e), true); render(); });
+    function get(u, how) { return fetch(u).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r[how](); }); }
+    Promise.all([get('recordings/sing_coach.json', 'json'), get('recordings/sing_twinkle_human.wav', 'blob').then(A.decode)]).then(function (r) {
+      var rec = r[0];
+      $('tune').value = String(rec.tune); $('key').value = String(rec.key); // the coach's scorecard was made with these
+      scoreSung(r[1], 'a real person', 'A real person singing on "da", recorded on this page. The notes are measured by the same code your own take gets. The coach reply below was recorded on ' + rec.recordedAt + ' from this scorecard; your own takes get a fresh one.', rec.text);
+    }).catch(function (e) { app.busy = false; say('Could not load the recorded take: ' + (e && e.message || e), true); render(); });
   }
 
   function singStart() {
@@ -347,6 +349,10 @@
     N.prices().then(function (p) { app.prices = p; render(); }).catch(function (e) { say('Model list unavailable: ' + e.message, true); });
     loadRecordings();
     render();
+    if (location.hash === '#sing-demo') { // a link straight to the real singing take, with the singing panel first
+      var sp = document.querySelector('[aria-label="Sing it"]'); sp.parentNode.insertBefore(sp, $('notice').nextSibling);
+      human();
+    }
   }
   init();
 })();

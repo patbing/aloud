@@ -1,0 +1,8 @@
+{
+ "take": "sing_twinkle_human.wav",
+ "tune": 2,
+ "key": 55,
+ "model": "openai/gpt-5.4-nano",
+ "recordedAt": "2026-11-19",
+ "text": "Tip: A#2 (note #1) is 162 cents sharp; try singing it a bit flatter (about 1.6 semitones down from where you hit it).\nTip: G3 (note #5) is -88 cents flat; bring it up noticeably (closer to the written pitch).\nTip: F3 (note #7) is -65 cents flat; aim higher on your F3."
+}

@@ -2,9 +2,11 @@
 
 [![Made with pollinations.ai](https://raw.githubusercontent.com/pollinations/pollinations/main/packages/ui/src/brand/badge-made-with.svg)](https://pollinations.ai/?ref=badge)
 
-**Read it out, see which words came through.** Live: https://patbing.github.io/aloud/
+**Read it out or sing it, see what came through.** Live: https://patbing.github.io/aloud/
 
-![Aloud](docs/screenshot.png)
+![Aloud: a real person's Twinkle, note by note](docs/screenshot.png)
+
+Open https://patbing.github.io/aloud/#sing-demo to land on the real singing take.
 
 Pick a tongue twister or type your own sentence, then read it aloud. `openai/whisper-large-v3` writes down what it heard, with no hint of the sentence. Code lines that transcript up with the sentence word by word: heard right, heard as something else, not heard, or extra. Words per minute and pauses come from the recording itself.
 

@@ -95,3 +95,20 @@ test('room noise is not taken from digital silence', () => {
   const n = P.roomNoise(x, R);
   assert.ok(n.some((v) => v !== 0));
 });
+
+test('the recorded real take still scores as its saved coach reply says', () => {
+  const fs = require('node:fs');
+  const rec = JSON.parse(fs.readFileSync(__dirname + '/../recordings/sing_coach.json', 'utf8'));
+  const b = fs.readFileSync(__dirname + '/../recordings/' + rec.take);
+  let o = 12, data;
+  while (o < b.length) { const id = b.toString('ascii', o, o + 4), n = b.readUInt32LE(o + 4); if (id === 'data') { data = b.subarray(o + 8, o + 8 + n); break; } o += 8 + n + (n & 1); }
+  const x = new Float32Array(data.length / 2);
+  for (let i = 0; i < x.length; i++) x[i] = data.readInt16LE(i * 2) / 32768;
+  const win = {}; new Function('window', fs.readFileSync(__dirname + '/../js/config.js', 'utf8'))(win);
+  const t = P.written(win.AL.config.TUNES[rec.tune], rec.key);
+  const c = P.card('x', t, P.score(x, 16000, t));
+  // Every note and number the coach cited must still be on the scorecard.
+  for (const [, note, cents] of rec.text.matchAll(/([A-G]#?\d)[^\n]*? (-?\d+) cents/g)) {
+    assert.ok(c.notes.some((n) => n.note === note && n.cents === Number(cents)), note + ' ' + cents);
+  }
+});
