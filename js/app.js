@@ -193,7 +193,7 @@
     box.appendChild(line);
     if (sc.checkDropped) { box.appendChild(h('p', 'warn', 'Too noisy to score: the pitch reader misread most notes even of a clean tone at your loudness in this room. Sing closer to the microphone or somewhere quieter.')); return; }
     var facts = [sc.counted ? sc.inTune + ' of ' + sc.counted + ' notes in tune' : 'no countable notes'];
-    if (sc.shift) facts.push('sung ' + Math.abs(sc.shift / 12) + ' octave' + (Math.abs(sc.shift) > 12 ? 's' : '') + (sc.shift < 0 ? ' lower' : ' higher') + ' than played (fine)');
+    if (Math.abs(sc.shift) >= 0.5) facts.push('sung ' + Math.abs(sc.shift).toFixed(1) + ' semitones ' + (sc.shift < 0 ? 'lower' : 'higher') + ' than played (fine: each note is judged in your own key)');
     if (sc.excluded) facts.push(sc.excluded + ' left out (the pitch reader misread them on the clean tone too)');
     if (sc.extras) facts.push(sc.extras + ' extra note' + (sc.extras > 1 ? 's' : ''));
     box.appendChild(h('p', 'facts', facts.join(' · ')));

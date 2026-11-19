@@ -23,13 +23,20 @@ test('a clean take of the tune is all in tune', () => {
   const sc = P.score(P.synth(t, R), R, t);
   assert.strictEqual(sc.counted, 5);
   assert.strictEqual(sc.inTune, 5);
-  assert.strictEqual(sc.shift, 0);
+  assert.ok(Math.abs(sc.shift) < 0.1, sc.shift);
+});
+
+test('singing in another key is not a mistake', () => {
+  const t0 = P.written(TUNE, 55);
+  const k = P.score(P.synth(t0.map((n) => ({ m: n.m - 5, sec: n.sec, cents: 30 })), R), R, t0);
+  assert.ok(Math.abs(k.shift + 4.7) < 0.1, k.shift);
+  assert.strictEqual(k.inTune, 5);
 });
 
 test('singing an octave down is not a mistake', () => {
   const t = P.written(TUNE, 60);
   const sc = P.score(P.synth(t.map((n) => ({ m: n.m - 12, sec: n.sec })), R), R, t);
-  assert.strictEqual(sc.shift, -12);
+  assert.ok(Math.abs(sc.shift + 12) < 0.1, sc.shift);
   assert.strictEqual(sc.inTune, 5);
 });
 
@@ -60,7 +67,7 @@ test('the coach card names notes and says an octave choice is fine', () => {
   const sc = P.score(P.synth(t.map((n) => ({ m: n.m - 12, sec: n.sec })), R), R, t);
   const c = P.card('Five up', t, sc);
   assert.strictEqual(c.notes[0].note, 'C3'); // the octave the singer chose, as the page shows it
-  assert.match(c.octave, /1 octave below/);
+  assert.match(c.key, /12\.0 semitones lower/);
   assert.strictEqual(P.messages(c)[0].content, P.COACH_RULES);
 });
 

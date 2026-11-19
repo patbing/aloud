@@ -51,7 +51,7 @@
 
   <section class="panel" aria-label="Sing it">
     <h2>Sing it: see which notes were in tune</h2>
-    <p class="hint">Play a short tune, sing it back in any octave, one “da” per note, and code measures every note in cents. No sign-in needed: the pitch reading runs in this tab.</p>
+    <p class="hint">Play a short tune, sing it back in your own key, one “da” per note, and code measures every note in cents. No sign-in needed: the pitch reading runs in this tab.</p>
     <div class="row2">
       <label class="field">Tune <select id="tune"></select></label>
       <label class="field">Play it for a <select id="key"></select></label>
@@ -75,7 +75,7 @@
     <div class="cols3">
       <div><h3>Code scores, not a model</h3><p>Your take goes to <code>openai/whisper-large-v3</code> with no hint of the sentence. Code lines its transcript up with the sentence word by word: heard right, heard as something else, not heard, or extra.</p></div>
       <div><h3>The transcriber is tested too</h3><p>A synthetic voice (<code>openai/tts-1</code>) reads the same sentence and the same transcriber writes it down. A word it gets wrong even from a clean reading is greyed out and not counted.</p></div>
-      <div><h3>The pitch reader is tested too</h3><p>For singing, the same pitch reader listens to a clean tone of the tune in your octave mixed with the quiet part of your own take. A note it misreads even then is greyed out and not counted.</p></div>
+      <div><h3>The pitch reader is tested too</h3><p>For singing, the same pitch reader listens to a clean tone of the tune in your key mixed with the quiet part of your own take. A note it misreads even then is greyed out and not counted.</p></div>
       <div><h3>Pace and pauses from your audio</h3><p>Words per minute and pauses come from the recording's own loudness in this browser. The coach model only reads that scorecard and may not invent mistakes it does not list.</p></div>
     </div>
   </section>

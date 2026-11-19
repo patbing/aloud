@@ -90,10 +90,10 @@
     return tune.steps.map(function (s) { return { m: base + s[0], sec: +(s[1] * beat).toFixed(2) }; });
   }
 
-  // Compare sung notes with the written ones. shift: octaves the singer chose (a multiple of 12), found from the medians unless given.
+  // Compare sung notes with the written ones. People sing in their own key, so by default the key is free: every whole-semitone
+  // shift is tried, the best fit is fine-tuned to the median of its matched notes, and each note is judged against the singer's own key.
   // Alignment is by order, not by clock, so a slow or uneven tempo is not a pitch mistake. ops: in | close | off | miss | extra.
-  function compare(target, sung, shift) {
-    if (shift == null) shift = sung.length ? 12 * Math.round((median(sung.map(function (s) { return s.m; })) - median(target.map(function (t) { return t.m; }))) / 12) || 0 : 0; // || 0 turns -0 into 0
+  function align(target, sung, shift) {
     var n = target.length, k = sung.length, D = [], i, j;
     function cost(a, b) { return Math.min(2, Math.abs(sung[b].m - shift - target[a].m)); }
     for (i = 0; i <= n; i++) { D[i] = [i]; }
@@ -104,12 +104,23 @@
     while (i > 0 || j > 0) {
       if (i > 0 && j > 0 && Math.abs(D[i][j] - (D[i - 1][j - 1] + cost(i - 1, j - 1))) < 1e-9) {
         var c = Math.round((sung[j - 1].m - shift - target[i - 1].m) * 100), ac = Math.abs(c);
-        ops.push({ type: ac <= IN_TUNE ? 'in' : ac <= CLOSE ? 'close' : 'off', i: i - 1, cents: c, held: sung[j - 1].dur, start: sung[j - 1].start });
+        ops.push({ type: ac <= IN_TUNE ? 'in' : ac <= CLOSE ? 'close' : 'off', i: i - 1, cents: c || 0, held: sung[j - 1].dur, start: sung[j - 1].start });
         i--; j--;
       } else if (i > 0 && D[i][j] === D[i - 1][j] + 1) { ops.push({ type: 'miss', i: i - 1 }); i--; }
       else { ops.push({ type: 'extra', m: sung[j - 1].m - shift, held: sung[j - 1].dur }); j--; }
     }
-    return { ops: ops.reverse(), shift: shift };
+    return { ops: ops.reverse(), shift: shift, cost: D[n][k] };
+  }
+  function compare(target, sung, shift) {
+    if (shift != null) return align(target, sung, shift);
+    if (!sung.length) return align(target, sung, 0);
+    var guess = median(sung.map(function (s) { return s.m; })) - median(target.map(function (t) { return t.m; })), best = null;
+    for (var s = -36; s <= 36; s++) {
+      var r = align(target, sung, s);
+      if (!best || r.cost < best.cost - 1e-9 || (Math.abs(r.cost - best.cost) < 1e-9 && Math.abs(s - guess) < Math.abs(best.shift - guess))) best = r;
+    }
+    var off = best.ops.filter(function (o) { return o.cents != null; }).map(function (o) { return o.cents / 100; });
+    return off.length ? align(target, sung, Math.round((best.shift + median(off)) * 100) / 100 || 0) : best;
   }
 
   // A sung-like tone: three harmonics, 5.5 Hz vibrato of +-vib semitones, 30 ms fades. notes: [{ m, sec, cents? }].
@@ -176,7 +187,7 @@
   function card(tuneName, target, sc) {
     return {
       tune: tuneName,
-      octave: sc.shift === 0 ? 'as written' : Math.abs(sc.shift / 12) + ' octave' + (Math.abs(sc.shift) > 12 ? 's' : '') + (sc.shift < 0 ? ' below' : ' above') + ' (fine, not a mistake)',
+      key: Math.abs(sc.shift) < 0.5 ? 'as played' : Math.abs(sc.shift).toFixed(1) + ' semitones ' + (sc.shift < 0 ? 'lower' : 'higher') + ' than played (fine: each note is judged in the key they chose)',
       notes: sc.ops.filter(function (o) { return o.i != null; }).map(function (o) {
         var t = target[o.i];
         return { note: name(t.m + sc.shift), result: o.excused ? 'not counted' : o.type === 'miss' ? 'missed' : o.type === 'in' ? 'in tune' : o.type, cents: o.cents == null ? null : o.cents, held_s: o.held == null ? null : o.held, written_s: t.sec };
